@@ -4,6 +4,6 @@ namespace AlbionCrafter.Interfaces
 {
     public interface IProfitCalculator
     {
-        List<ProfitStructure> CalculateProfit(WeaponCostDTO weaponResultDTOs);
+        List<ProfitStructure> GetProfitByWeapon(WeaponCostDTO weaponResultDTOs);
     }
 }
