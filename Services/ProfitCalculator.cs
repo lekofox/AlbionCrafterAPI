@@ -5,38 +5,48 @@ namespace AlbionCrafter.Services
 {
     public class ProfitCalculator : IProfitCalculator
     {
-        public List<ProfitStructure> CalculateProfit(WeaponCostDTO weaponCostDTO)
+
+        public List<ProfitStructure> GetProfitByWeapon(WeaponCostDTO weaponCostDTO)
         {
-            var result = new List<ProfitStructure>();
+            return BuildProfitStructure(weaponCostDTO);
+        }
+
+       private List<ProfitStructure> BuildProfitStructure(WeaponCostDTO weaponCostDTO)
+        {
+            var profitStructures = new List<ProfitStructure>();
 
             foreach (var weapon in weaponCostDTO.WeaponStructure)
             {
-                var profitCalc = new ProfitStructure();
-
-
-                profitCalc.WeaponName = weapon.WeaponName;
-
-                foreach (var recipeItem in weapon.WeaponRecipe)
-                {
-                    var itemName = recipeItem.Key;
-                    var itemQuantity = recipeItem.Value;
-
-                    profitCalc.WeaponCost += weaponCostDTO.Materials[itemName] * itemQuantity;
-                }
-
-                var sellPrice = weaponCostDTO.WeaponSellPrice[profitCalc.WeaponName];
-
-                profitCalc.CraftProfit = sellPrice + (weaponCostDTO.FullJournal * 0.7m) - profitCalc.WeaponCost + (profitCalc.WeaponCost * weaponCostDTO.ReturnRate / 100);
-
-                if (weaponCostDTO.Materials.ContainsKey($"{weapon.WeaponName}.Artifact"))
-                {
-                    profitCalc.CraftProfit -= weaponCostDTO.Materials[$"{weapon.WeaponName}.Artifact"] * weaponCostDTO.ReturnRate / 100;
-                }
-
-                result.Add(profitCalc);
+                profitStructures.Add(CalculateProfit(weapon, weaponCostDTO));
             }
 
-            return result;
+            return profitStructures;
+        }
+
+        private ProfitStructure CalculateProfit(WeaponStructure weapon, WeaponCostDTO weaponCostDTO)
+        {
+            var profitStructure = new ProfitStructure();
+
+            profitStructure.WeaponName = weapon.WeaponName;
+            var sellPrice = weaponCostDTO.WeaponSellPrice[profitStructure.WeaponName];
+
+            foreach (var recipeItem in weapon.WeaponRecipe)
+
+            {
+                var itemName = recipeItem.Key;
+                var itemQuantity = recipeItem.Value;
+
+                profitStructure.WeaponCost += weaponCostDTO.Materials[itemName] * itemQuantity;
+            }
+
+            profitStructure.CraftProfit = sellPrice + (weaponCostDTO.FullJournal * 0.7m) - profitStructure.WeaponCost + (profitStructure.WeaponCost * weaponCostDTO.ReturnRate / 100);
+
+            if (weaponCostDTO.Materials.ContainsKey($"{weapon.WeaponName}.Artifact"))
+            {
+                profitStructure.CraftProfit -= weaponCostDTO.Materials[$"{weapon.WeaponName}.Artifact"] * weaponCostDTO.ReturnRate / 100;
+            }
+
+            return profitStructure;
         }
     }
 }

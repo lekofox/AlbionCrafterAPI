@@ -13,8 +13,6 @@ public class AlbionController : ControllerBase
     private readonly ILogger<AlbionController> _logger;
     private readonly IWeaponTreat _weaponTreat;
     private readonly IProfitCalculator _profitCalculator;
-
-
     private readonly IXmlRepository _xmlRepository;
 
     public AlbionController(ILogger<AlbionController> logger, IXmlRepository xmlRepository, IWeaponTreat weaponTreat, IProfitCalculator profitCalculator)
@@ -29,8 +27,8 @@ public class AlbionController : ControllerBase
     [ProducesResponseType(typeof(WeaponCostDTO), 200)]
     public IActionResult GetWeapons()
     {
-        var repository = new XmlRepository();
-        var result = _weaponTreat.ListWeapons(repository.ListAllRecipes());
+        var result = _weaponTreat.ListWeapons();
+
         return Ok(result);
     }
 
@@ -38,17 +36,16 @@ public class AlbionController : ControllerBase
     [ProducesResponseType(typeof(WeaponCostDTO), 200)]
     public IActionResult GetWeaponsByCategoryId(GearType gearType)
     {
-        var repository = new XmlRepository();
+        var result = _weaponTreat.ListWeaponsByCategoryId(gearType);
 
-        var result = _weaponTreat.ListWeapons(repository.ListRecipesByCategoryId(((int)gearType)));
         return Ok(result);
     }
 
-    [HttpPost(Name = "CalcProfit")]
+    [HttpPost(Name = "FindProfitByWeapon")]
     [ProducesResponseType(typeof(List<ProfitStructure>), 200)]
     public IActionResult PostCalcProfit(WeaponCostDTO listOfWeapons)
     {
-        var profit = _profitCalculator.CalculateProfit(listOfWeapons);
+        var profit = _profitCalculator.GetProfitByWeapon(listOfWeapons);
         return Ok(profit);
     }
 }
