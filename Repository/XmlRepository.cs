@@ -8,13 +8,13 @@ namespace AlbionCrafter.Repository
 {
     public class XmlRepository : IXmlRepository
     {
+
+        private readonly XDocument _data = XDocument.Load("DB/db.xml");
         public List<WeaponStructure> ListAllRecipes()
         {
-            XDocument data = XDocument.Load("DB/db.xml");
             List<WeaponStructure> weaponsStructure = new List<WeaponStructure>();
 
-            
-            List<WeaponStructure> treatedQuery = GetWeaponsStructure(data);
+            List<WeaponStructure> treatedQuery = GetWeaponsStructure(_data);
 
             AddMaterialTypeAndValueToStructure(treatedQuery, weaponsStructure);
 
@@ -22,11 +22,10 @@ namespace AlbionCrafter.Repository
         }
 
         public List<WeaponStructure> ListRecipesByCategoryId(int categoryId)
-        {
-            XDocument data = XDocument.Load("DB/db.xml");
+        {  
             List<WeaponStructure> weaponsStructure = new List<WeaponStructure>();
 
-            List<WeaponStructure> treatedQuery = GetWeaponsStructure(data, categoryId);
+            List<WeaponStructure> treatedQuery = GetWeaponsStructure(_data, categoryId);
 
             AddMaterialTypeAndValueToStructure(treatedQuery, weaponsStructure);
 
